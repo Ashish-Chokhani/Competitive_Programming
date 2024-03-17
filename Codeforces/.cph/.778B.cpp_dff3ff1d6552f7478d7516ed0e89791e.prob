@@ -1,0 +1,1 @@
+{"name":"Local: 778B","url":"/Users/ashishchokhani/Desktop/codes/Codeforces/778B.cpp","tests":[{"id":1678779400311,"input":"3 3\na := 101\nb := 011\nc := ? XOR b","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/ashishchokhani/Desktop/codes/Codeforces/778B.cpp","group":"local","local":true}

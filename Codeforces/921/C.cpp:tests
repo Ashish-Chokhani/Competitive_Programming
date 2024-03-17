@@ -1,0 +1,8 @@
+[
+	{
+		"test": "3\n2 2 4\nabba\n2 2 3\nabb\n3 3 10\naabbccabab\n"
+	},
+	{
+		"test": "1\n2 2 4\nabba\n"
+	}
+]

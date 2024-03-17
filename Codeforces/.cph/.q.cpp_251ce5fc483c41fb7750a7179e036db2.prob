@@ -1,0 +1,1 @@
+{"name":"Local: q","url":"/Users/ashishchokhani/Desktop/codes/Codeforces/q.cpp","tests":[{"id":1699002090545,"input":"1\n2 \nQFT\nQRFRTQF\nRT QF\n","output":""},{"id":1699002449066,"input":"1\n0\nQFT \nQF","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/ashishchokhani/Desktop/codes/Codeforces/q.cpp","group":"local","local":true}

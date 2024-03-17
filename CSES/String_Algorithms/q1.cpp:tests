@@ -1,0 +1,11 @@
+[
+	{
+		"test": "ababc\n4\nab\nabab\nc\ncb\n"
+	},
+	{
+		"test": "abc\n5\na\nb\nc\nab\nbc\n"
+	},
+	{
+		"test": "abc\n3\na\nb\nc\n"
+	}
+]

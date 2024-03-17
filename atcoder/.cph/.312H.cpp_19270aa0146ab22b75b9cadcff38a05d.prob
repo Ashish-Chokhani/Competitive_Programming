@@ -1,0 +1,1 @@
+{"name":"Local: 312H","url":"/Users/ashishchokhani/Desktop/codes/atcoder/312H.cpp","tests":[{"id":1690906916828,"input":"3\n1 5 10\n1 1","output":""},{"id":1690907632450,"input":"11\n0 3 0 3 0 0 0 9 5 6 0\n3 2","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/ashishchokhani/Desktop/codes/atcoder/312H.cpp","group":"local","local":true}

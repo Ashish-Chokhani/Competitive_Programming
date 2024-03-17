@@ -1,0 +1,11 @@
+[
+	{
+		"test": "AC\nEC\n"
+	},
+	{
+		"test": "DA\nEA\n"
+	},
+	{
+		"test": "BD\nBD\n"
+	}
+]

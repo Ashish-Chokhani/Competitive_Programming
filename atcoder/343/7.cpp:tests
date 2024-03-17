@@ -1,0 +1,17 @@
+[
+	{
+		"test": "3\nsnuke\nkensho\nuk\n"
+	},
+	{
+		"test": "2\nsnuke\nkens\n"
+	},
+	{
+		"test": "3\nabc\nabc\narc\n"
+	},
+	{
+		"test": "6\ncmcmrcc\nrmrrrmr\nmrccm\nmmcr\nrmmrmrcc\nccmcrcmcm\n"
+	},
+	{
+		"test": "2\nsnuke\nkensho\n"
+	}
+]

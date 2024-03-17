@@ -1,0 +1,14 @@
+[
+	{
+		"test": "4\nzaabaabz\n?????\ncode?????s\ncodeforces\n"
+	},
+	{
+		"test": "1\nzaabaabz\n"
+	},
+	{
+		"test": "1\naabaab\n"
+	},
+	{
+		"test": "1\naaaa\n"
+	}
+]

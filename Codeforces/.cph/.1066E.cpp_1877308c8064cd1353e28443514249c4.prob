@@ -1,0 +1,1 @@
+{"name":"Local: 1066E","url":"/Users/ashishchokhani/Desktop/codes/Codeforces/1066E.cpp","tests":[{"id":1671114284861,"input":"4 4\n1010\n1101","output":""},{"id":1671114306010,"input":"4 5\n1001\n10101","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/ashishchokhani/Desktop/codes/Codeforces/1066E.cpp","group":"local","local":true}
