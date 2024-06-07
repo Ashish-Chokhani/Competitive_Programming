@@ -1,4 +1,5 @@
-Competitive Programming 🔆🔆
+# Competitive Programming 🔆🔆
+
 Hello Programmers💻, A one-stop destination for all your Competitive Programming Resources.
 
 📌📌 What is Competitive Programming? 📌📌
