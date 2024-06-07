@@ -94,38 +94,73 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
+  int n;
+  cin>>n;
+  string s;
+  cin>>s;
+  int N=0,S=0,E=0,W=0;
+  for(char &ch:s){
+  	N+=ch=='N';S+=ch=='S';E+=ch=='E';W+=ch=='W';
+  }
+  if(N<S){
+  	swap(N,S);
+  	for(int i=0;i<n;i++){
+	  	if(s[i]=='N') s[i]='S';
+	  	else if(s[i]=='S') s[i]='N';
     }
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  if(E<W){
+  	swap(E,W);
+  	for(int i=0;i<n;i++){
+	  	if(s[i]=='E') s[i]='W';
+	  	else if(s[i]=='W') s[i]='E';
+    }
+  }
+  if(((N-S)&1) || ((E-W)&1)){
+  	cout<<"NO\n";
+  	return;
+  }
+  // Handle the case when both are zero
+  int dx=(E-W)/2,dy=(N-S)/2;
+  int N1=0,S1=0,E1=0,W1=0;
+  bool reached_dx=false,reached_dy=false;
+  auto what=[&](int val,int type){
+  	char ch='R';
+  	if((type==0 && reached_dx) || (type==1 && reached_dy)) ch='H';
+  	if(type==0) reached_dx|=(val==dx);
+  	if(type==1) reached_dy|=(val==dy);
+  	return ch;
+  };
+  string ans="";
+  for(int i=0;i<n;i++){
+  	N1+=s[i]=='N';S1+=s[i]=='S',E1+=s[i]=='E',W1+=s[i]=='W';
+    if((s[i]=='N') || (s[i]=='S')) ans+=what(N1-S1,1);
+  	else if(s[i]=='E' || s[i]=='W') ans+=what(E1-W1,0);
+  }
+  string temp=ans;
+  sort(all(temp));
+  if(temp[0]==temp.back()) ans="NO";
+  if((dx==0 && dy==0 && (N>=2 || S>=2 || E>=2 && W>=2)) || (N==1 && S==1 && E==1 && W==1)){
+  	ans="";
+  	bool f1=false,f2=false;
+  	if(N>=2 || S>=2){
+  		for(int i=0;i<n;i++){
+	  		if(!f1 && s[i]=='N') ans+='R';
+	  		else if(!f2 && s[i]=='S') ans+='R';
+	  		else ans+='H';
+	  		f1|=s[i]=='N';f2|=s[i]=='S';
+  	    }
+  	}
+  	else{
+  		for(int i=0;i<n;i++){
+	  		if(!f1 && s[i]=='E') ans+='R';
+	  		else if(!f2 && s[i]=='W') ans+='R';
+	  		else ans+='H';
+	  		f1|=s[i]=='E';f2|=s[i]=='W';
+  	    }	
+  	}
+  }
+  cout<<ans<<endl;
 } 
 
 int32_t main()
@@ -145,8 +180,7 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
     while (t--)
     {
         solve();

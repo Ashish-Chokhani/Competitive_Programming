@@ -94,38 +94,51 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
-  }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+	int n;
+	cin>>n;
+	string s;
+	cin>>s;
+	vector<int>arr(n),firstSum(n,0),secondSum(n,0),pre1(n),pre2(n);
+	for(int i=0;i<n;i++){
+		cin>>arr[i];
+		if(i&1 && s[i]=='1') firstSum[i]=arr[i];
+		if((i&1)==0 && s[i]=='0') firstSum[i]=arr[i];
+		if(i&1 && s[i]=='0') secondSum[i]=arr[i];
+		if((i&1)==0 && s[i]=='1') secondSum[i]=arr[i];
+	}
+	pre1[0]=firstSum[0],pre2[0]=secondSum[0];
+	for(int i=1;i<n;i++){
+		pre1[i]=firstSum[i]+pre1[i-1];
+		pre2[i]=secondSum[i]+pre2[i-1];
+	}
+	auto getSum=[&](int l,int r,int type){
+		if(l>r) return 0LL;
+		if(type==1){
+			if(l==0) return pre1[r];
+			return pre1[r]-pre1[l-1];
+		}
+		else{
+			if(l==0) return pre2[r];
+			return pre2[r]-pre2[l-1];
+		}
+		return 0LL;
+	};
+	int ans=INF;
+	for(int i=0;i<n-1;i++){
+		int val=0;
+		if(s[i]=='1') val+=arr[i];
+		if(s[i+1]=='1') val+=arr[i+1];
+		if(((i+2)&1)==1) val+=getSum(i+2,n-1,2)+getSum(0,i-1,1);
+		else val+=getSum(i+2,n-1,1)+getSum(0,i-1,2);
+		ans=min(ans,val);
+		val=0;
+		if(s[i]=='0') val+=arr[i];
+		if(s[i+1]=='0') val+=arr[i+1];
+		if(((i+2)&1)==1) val+=getSum(i+2,n-1,1)+getSum(0,i-1,2);
+		else val+=getSum(i+2,n-1,2)+getSum(0,i-1,1);
+		ans=min(ans,val);
+	}
+	cout<<ans<<endl;
 } 
 
 int32_t main()

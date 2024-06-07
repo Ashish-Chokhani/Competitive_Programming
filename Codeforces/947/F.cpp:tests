@@ -1,0 +1,8 @@
+[
+	{
+		"test": "10 4 1\nAGCAATTCAT\nACAT\n"
+	},
+	{
+		"test": "7 1 2\nATGCGTA\nA\n"
+	}
+]

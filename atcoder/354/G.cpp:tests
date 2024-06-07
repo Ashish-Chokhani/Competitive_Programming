@@ -1,0 +1,11 @@
+[
+	{
+		"test": "4\natcoder\nat\ncoder\ncode\n5 2 3 4\n"
+	},
+	{
+		"test": "10\nabcd\nabc\nab\na\nb\nc\nd\nab\nbc\ncd\n100 10 50 30 60 90 80 70 40 20\n"
+	},
+	{
+		"test": "6\na\nab\nab\nabc\nabcd\nb\n30 70 50 10 100 60\n"
+	}
+]

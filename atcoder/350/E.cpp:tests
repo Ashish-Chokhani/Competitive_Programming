@@ -1,0 +1,14 @@
+[
+	{
+		"test": "((A)y)x\n"
+	},
+	{
+		"test": "((XYZ)n(X(y)Z))\n"
+	},
+	{
+		"test": "(((()))(()))(())\n\n"
+	},
+	{
+		"test": "dF(qT(plC())NnnfR(GsdccC))PO()KjsiI((ysA)eWW)ve\n"
+	}
+]

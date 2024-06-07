@@ -16,7 +16,6 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
-
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
 #else
@@ -93,39 +92,135 @@ int ceil_div(int x, int y) {
     return (x - 1) / y + 1;
 }
 
-void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+template <typename num_t> 
+struct segtree {
+  int n, depth;
+  vector<num_t> tree, lazy;
+
+  void init(int s, long long* arr) {
+    n = s;
+    tree = vector<num_t>(4 * s, 0);
+    lazy = vector<num_t>(4 * s, 0);
+    init(0, 0, n - 1, arr);
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+
+  num_t init(int i, int l, int r, long long* arr) {
+    if (l == r) return tree[i] = arr[l];
+
+    int mid = (l + r) / 2;
+    num_t a = init(2 * i + 1, l, mid, arr),
+          b = init(2 * i + 2, mid + 1, r, arr);
+    return tree[i] = a.op(b);
+  }
+
+  void update(int l, int r, num_t v) {
+	if (l > r) return;
+    update(0, 0, n - 1, l, r, v);
+  }
+
+  num_t update(int i, int tl, int tr, int ql, int qr, num_t v) {
+    eval_lazy(i, tl, tr);
+	
+	if (tr < ql || qr < tl) return tree[i];
+    if (ql <= tl && tr <= qr) {
+      lazy[i] = lazy[i].val + v.val;
+      eval_lazy(i, tl, tr);
+      return tree[i];
+    }
+    
+    int mid = (tl + tr) / 2;
+    num_t a = update(2 * i + 1, tl, mid, ql, qr, v),
+          b = update(2 * i + 2, mid + 1, tr, ql, qr, v);
+    return tree[i] = a.op(b);
+  }
+
+  num_t query(int l, int r) {
+	if (l > r) return num_t::null_v;
+    return query(0, 0, n-1, l, r);
+  }
+
+  num_t query(int i, int tl, int tr, int ql, int qr) {
+    eval_lazy(i, tl, tr);
+    
+    if (ql <= tl && tr <= qr) return tree[i];
+    if (tr < ql || qr < tl) return num_t::null_v;
+
+    int mid = (tl + tr) / 2;
+    num_t a = query(2 * i + 1, tl, mid, ql, qr),
+          b = query(2 * i + 2, mid + 1, tr, ql, qr);
+    return a.op(b);
+  }
+
+  void eval_lazy(int i, int l, int r) {
+    tree[i] = tree[i].lazy_op(lazy[i], (r - l + 1));
+    if (l != r) {
+      lazy[i * 2 + 1] = lazy[i].val + lazy[i * 2 + 1].val;
+      lazy[i * 2 + 2] = lazy[i].val + lazy[i * 2 + 2].val;
+    }
+
+    lazy[i] = num_t();
+  }
+};
+
+struct max_t {
+  long long val;
+  static const long long null_v = -9223372036854775807LL;
+
+  max_t(): val(0) {}
+  max_t(long long v): val(v) {}
+
+  max_t op(max_t& other) {
+    return max_t(max(val, other.val));
+  }
+  
+  max_t lazy_op(max_t& v, int size) {
+    return max_t(val + v.val);
+  }
+};
+
+vector<int>f(vector<int>&arr,bool isReverse=false){
+	int n=arr.size();
+	if(isReverse){
+		reverse(all(arr));
+		for(int i=0;i<n;i++) arr[i]*=-1;
+	}
+	vector<int>temp=arr;
+    getunique(temp);
+    unordered_map<int,int,custom_hash>what;
+    for(int i=0;i<(int)temp.size();i++) what[temp[i]]=i;
+    for(int i=0;i<n;i++) arr[i]=what[arr[i]];
+	int t[n];
+	memset(t,0,sizeof(t));
+	segtree<max_t>Sg;
+	Sg.init(n,t);
+	vector<int>dp(n);
+	for(int i=0;i<n;i++){
+		if(arr[i]==0) dp[i]=1;
+		else dp[i]=1+Sg.query(0,arr[i]-1).val;
+		int prev_val=Sg.query(arr[i],arr[i]).val;
+		Sg.update(arr[i],arr[i],dp[i]-prev_val);
+	}
+	return dp;
+}
+
+void solve(){
+  int n;
+  cin>>n;
+  vector<int>arr(n);
+  for(int i=0;i<n;i++){
+  	cin>>arr[i];
+  	--arr[i];
+  }
+  vector<int>dp=f(arr),dp1=f(arr,true);
+  int LIS=*max_element(all(dp));
+  vector<int>ans;
+  for(int i=0;i<n;i++){
+  	int val=dp[i]+dp1[n-i-1]-1;
+  	if(val==LIS) ans.push_back(i);
+  }
+  cout<<(int)ans.size()<<endl;
+  for(auto it:ans) cout<<it+1<<" ";
+  cout<<endl;
 } 
 
 int32_t main()
@@ -145,8 +240,7 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
     while (t--)
     {
         solve();

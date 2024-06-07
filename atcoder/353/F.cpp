@@ -94,38 +94,71 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
-  }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+	int K,Sx,Sy,Tx,Ty;
+	cin>>K;
+	cin>>Sx>>Sy;
+	cin>>Tx>>Ty;
+	auto isBadTile=[&](int x,int y)->bool{
+		return x%2==y%2;
+	};
+	auto getDistBwGoodTiles=[&](int x1,int y1,int x2,int y2)->int{
+		int q1=floor_div(x1,K)*x1;
+		int q2=floor_div(x2,K)*x2;
+		int q3=floor_div(y1,K)*y1;
+		int q4=floor_div(y2,K)*y2;
+		int q5=ceil_div(x1,K)*x1;
+		int q6=ceil_div(x2,K)*x2;
+		int q7=ceil_div(y1,K)*y1;
+		int q8=ceil_div(y2,K)*y2;
+		
+		if(q1==q2 && q3==q4) return 0;
+		if(q1==q2) return abs(q4-q3)/K;
+		if(q3==q4) return q2-q1;
+		return q2-q5+q4-q7;
+	};
+	
+	auto getNextGoodTile=[&](int i,int x,int y)->array<int,3>{
+		int src_x=x,src_y=y;
+		int dis=0;
+		if(isBadTile(src_x,src_y)) return {dis,src_x,src_y};
+		if(i==0){
+			dis=ceil_div(src_y,K)*src_y+1-src_y;
+			src_y=ceil_div(src_y,K)*src_y+1;
+		}
+		else if(i==1){
+			dis=src_x-floor_div(src_x,K)*src_x+1;
+			src_x=floor_div(src_x,K)*src_x-1;
+		}
+		else if(i==2){
+			dis=ceil_div(src_x,K)*src_x+1-src_x;
+			src_x=ceil_div(src_x,K)*src_x+1;
+		}
+		else{
+			dis=src_y-floor_div(src_y,K)*src_y+1;
+			src_y=floor_div(src_y,K)*src_y-1;
+		}
+		return {dis,src_x,src_y};
+	};
+	//Upward: dis=ceil_div(y1,K)*y1+1-y1;
+	//Left:   dis=x1-floor_div(x1,K)*x1+1
+	//Right:  dis=ceil_div(x1,K)*x1+1-x1;
+	//Down:   dis=y1-floor_div(y1,K)*y1+1;
+	cout<<Sx<<" "<<Sy<<" "<<Tx<<" "<<Ty<<endl;
+	int ans=INF;
+	for(int i=0;i<4;i++){
+		auto nextTile_src=getNextGoodTile(i,Sx,Sy);
+		
+		//Accout for K=1 and K=2 cases
+		//Correct the formula
+		for(int j=0;j<4;j++){
+			auto nextTile_dest=getNextGoodTile(j,Tx,Ty);
+			int dis1=nextTile_src[0],dis2=nextTile_dest[0];
+			int x1=nextTile_src[1],y1=nextTile_src[2],x2=nextTile_dest[1],y2=nextTile_dest[2];
+			cout<<i<<" "<<j<<" "<<dis1<<" "<<dis2<<" "<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<endl;
+			ans=min(ans,dis1+dis2+getDistBwGoodTiles(x1,y1,x2,y2));
+		}
+	}
+	cout<<ans<<endl;
 } 
 
 int32_t main()

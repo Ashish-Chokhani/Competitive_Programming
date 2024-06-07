@@ -16,7 +16,6 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
-
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
 #else
@@ -94,38 +93,45 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+  int n;
+  cin>>n;
+  int a,b;
+  cin>>a>>b;
+  --a;--b;
+  vector<int>adj[n];
+  for(int i=0;i<n-1;i++){
+  	int u,v;
+  	cin>>u>>v;
+  	--u;--v;
+  	adj[u].push_back(v);
+  	adj[v].push_back(u);
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  bool found=false;
+  vector<int>good_nodes;
+  function<void(int,int)>DFS=[&](int u,int p){
+  	good_nodes.push_back(u);
+  	for(int v:adj[u]){
+  		if(v==p) continue;
+  		found=found|(v==b);
+  		if(found) continue;
+  		DFS(v,u);
+  	}
+  	if(!found) good_nodes.pop_back();
+  };
+  DFS(a,-1);
+  if(a!=b) good_nodes.push_back(b);
+  int len=good_nodes.size()-1;
+  int node=good_nodes[len/2];
+  int maxi=0;
+  function<void(int,int,int d)>findDepth=[&](int u,int p,int d){
+  	maxi=max(maxi,d);
+  	for(int v:adj[u]){
+  		if(v==p) continue;
+  		findDepth(v,u,d+1);
+  	}
+  };
+  findDepth(node,-1,0);
+  cout<<ceil_div(len,2)+(2*(n-1))-maxi<<endl;
 } 
 
 int32_t main()
@@ -145,8 +151,7 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
     while (t--)
     {
         solve();

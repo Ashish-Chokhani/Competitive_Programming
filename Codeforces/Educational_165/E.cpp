@@ -94,39 +94,17 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+  int p1,p2,p3;
+  cin>>p1>>p2>>p3;
+  int ans=-1;
+  for(int a3=0;a3<=p1;a3++) for(int b3=0;b3<=p2;b3++) for(int c3=0;c3<=p3;c3++){
+  	int v1=p1-a3,v2=p2-b3,v3=p3-c3,v4=a3+b3+c3;
+  	if(v1&1 || v2&1 || v3&1 || v4&1) continue;
+  	ans=max(ans,min(v4/2,v4-max({a3,b3,c3})));
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  cout<<ans<<endl;
 } 
+
 
 int32_t main()
 {
@@ -145,8 +123,7 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
     while (t--)
     {
         solve();

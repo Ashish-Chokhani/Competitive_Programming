@@ -16,6 +16,145 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
+template<class T>void print(T x)
+{
+  cerr << x;
+}
+template<class T, class V>
+         void print(pair<T , V> x)
+{
+  print(x.first); 
+  cerr << ':';
+  print(x.second);
+}
+template<class T>
+         void print(vector<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T,
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T, 
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(unordered_set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T, class V>
+         void print(vector<pair<T, V>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x.first);
+    cerr << ":"; 
+    print(x.second);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template <class T, class V> 
+          void print(map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T, class V> 
+          void print(unordered_map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T> 
+          void print(vector<vector<T>> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template<class T>
+         void print(stack<T> &a)
+{
+  cerr << '[' << ' ';
+  stack<T>temp=a;
+  while(!temp.empty())
+  {
+    auto val=temp.top();
+    temp.pop();
+    print(val); 
+    cerr << " ";
+  }
+  cerr << ']';
+}
 
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
@@ -93,39 +232,37 @@ int ceil_div(int x, int y) {
     return (x - 1) / y + 1;
 }
 
+const int maxN=2e5+2;
+vector<int>adj[maxN];
+
+void DFS(int cur,int &cntNodes,int &cntEdges,vector<int>&vis){
+  	vis[cur]=1;
+  	cntNodes++;
+  	for(auto to:adj[cur]){
+  		cntEdges++;
+  		if(!vis[to]) DFS(to,cntNodes,cntEdges,vis);
+  	}
+}
+
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+  int n,m;
+  cin>>n>>m;
+  for(int i=0;i<m;i++){
+  	int u,v;
+  	cin>>u>>v;
+  	--u;--v;
+  	adj[u].push_back(v);
+  	adj[v].push_back(u);
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  vector<int>vis(n,0);
+  int ans=0;
+  for(int i=0;i<n;i++){
+  	int cntNodes=0,cntEdges=0;
+  	if(!vis[i]) DFS(i,cntNodes,cntEdges,vis);
+  	ans+=(cntNodes*(cntNodes-1))/2;
+  	ans-=(cntEdges/2);
+  }
+  cout<<ans<<endl;
 } 
 
 int32_t main()

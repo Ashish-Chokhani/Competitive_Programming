@@ -16,6 +16,145 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
+template<class T>void print(T x)
+{
+  cerr << x;
+}
+template<class T, class V>
+         void print(pair<T , V> x)
+{
+  print(x.first); 
+  cerr << ':';
+  print(x.second);
+}
+template<class T>
+         void print(vector<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T,
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T, 
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(unordered_set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T, class V>
+         void print(vector<pair<T, V>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x.first);
+    cerr << ":"; 
+    print(x.second);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template <class T, class V> 
+          void print(map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T, class V> 
+          void print(unordered_map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T> 
+          void print(vector<vector<T>> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template<class T>
+         void print(stack<T> &a)
+{
+  cerr << '[' << ' ';
+  stack<T>temp=a;
+  while(!temp.empty())
+  {
+    auto val=temp.top();
+    temp.pop();
+    print(val); 
+    cerr << " ";
+  }
+  cerr << ']';
+}
 
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
@@ -94,39 +233,58 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+  int n,k;
+  cin>>n>>k;
+  vector<int>arr(n);
+  for(auto &x:arr){
+    cin>>x;
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  vector<int>right(n);
+  right[n-1]=arr[n-1]>=arr[k-1]?n-1:n;
+  for(int i=n-2;i>=0;i--){
+  	if(arr[i]>arr[k-1]) right[i]=i;
+  	else right[i]=right[i+1];
+  }
+  int wins=0;
+  multiset<int>st;
+  st.insert(arr[0]);
+  //Check swapping wit 0
+  swap(arr[0],arr[k-1]);
+  int j=1,win=0;
+  while(j<n && arr[j]<=arr[0]){
+  	wins++;
+  	j++;
+  }
+  swap(arr[0],arr[k-1]);
+  for(int i=1;i<n;i++){
+  	if(i>k-1 && arr[i]>arr[k-1]){
+  		st.insert(arr[i]);
+  		continue;
+  	}
+  	if(i>k-1){
+  		st.erase(st.find(arr[k-1]));
+  		st.insert(arr[i]);
+  	}
+  	int maxi=*(--st.end());
+  	int left_win=arr[k-1]>maxi;
+  	if(left_win==0){
+  		if(i>k-1) st.insert(arr[k-1]);
+  		else st.insert(arr[i]);
+  		continue;
+  	}
+  	int r=i<n-1?right[i+1]:n;
+  	if(i<k-1 && arr[i]>arr[k-1]) r=min(r,k-1);
+  	int right_win=max(0LL,r-i-1);
+  	wins=max(wins,left_win+right_win);
+  	if(i>k-1){
+  		st.insert(arr[k-1]);
+  		st.erase(st.find(arr[i]));
+  	}
+  	st.insert(arr[i]);
+  }
+  cout<<wins<<endl;
 } 
+ 
 
 int32_t main()
 {
@@ -145,8 +303,8 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
+    int cnt=0;
     while (t--)
     {
         solve();

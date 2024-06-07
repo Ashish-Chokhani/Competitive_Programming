@@ -94,38 +94,60 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
+	int a,b,n,m;
+	cin>>a>>b>>n>>m;
+	vector<pair<int,int>>chips(n);
+	for(int i=0;i<n;i++) cin>>chips[i].first>>chips[i].second;
+	vector<int>moves[4]; //L R D U
+    map<pair<char,int>,int>mp;
+    int cur_L=0,cur_R=0,cur_D=0,cur_U=0;
+    for(int i=0;i<m;i++){
+    	char ch;cin>>ch;
+    	int k;cin>>k;
+    	if(ch=='L'){
+    		cur_L++;
+    		moves[0].push_back(k);
+    		mp[{'L',cur_L}]=i+1;
+    	}
+    	else if(ch=='R'){
+    		cur_R++;
+    		moves[1].push_back(k);
+    		mp[{'R',cur_R}]=i+1;
+    	}
+    	else if(ch=='D'){
+    		cur_D++;
+    		moves[2].push_back(k);
+    		mp[{'D',cur_D}]=i+1;
+    	}
+    	else if(ch=='U'){
+    		cur_U++;
+    		moves[3].push_back(k);
+    		mp[{'U',cur_U}]=i+1;
+    	}
     }
-  }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+    mp[{'L',INF}]=mp[{'R',INF}]=mp[{'D',INF}]=mp[{'U',INF}]=INF;
+    for(int i:{0,1,2,3}) for(int j=1;j<(int)moves[i].size();j++) moves[i][j]+=moves[i][j-1];
+    auto when=[&](int i,int dis)->int{
+    	auto ind=lower_bound(all(moves[i]),dis)-moves[i].begin();
+    	if(ind==moves[i].size()) ind=INF;
+    	else ind++;
+    	return ind;
+    };
+    int score_Alice=0,score_Bob=0;
+    for(auto it:chips){
+    	int x=it.first,y=it.second;
+    	int l_dist=y,r_dist=b-l_dist+1,u_dist=x,d_dist=a-u_dist+1;
+    	int val=min({when(0,l_dist),when(1,r_dist),when(2,d_dist),when(3,u_dist)});
+    	if(val==INF) continue;
+    	int which_turn=INF;
+    	which_turn=min(which_turn,mp[{'L',when(0,l_dist)}]);
+    	which_turn=min(which_turn,mp[{'R',when(1,r_dist)}]);
+    	which_turn=min(which_turn,mp[{'D',when(2,d_dist)}]);
+    	which_turn=min(which_turn,mp[{'U',when(3,u_dist)}]);
+    	if(which_turn&1) score_Alice++;
+    	else score_Bob++;
+    }
+    cout<<score_Alice<<" "<<score_Bob<<endl;
 } 
 
 int32_t main()
@@ -145,8 +167,7 @@ int32_t main()
     #endif
     
     int t;
-    //cin >> t;
-    t=1;
+    cin >> t;
     while (t--)
     {
         solve();

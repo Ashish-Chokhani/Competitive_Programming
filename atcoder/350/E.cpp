@@ -16,6 +16,145 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
+template<class T>void print(T x)
+{
+  cerr << x;
+}
+template<class T, class V>
+         void print(pair<T , V> x)
+{
+  print(x.first); 
+  cerr << ':';
+  print(x.second);
+}
+template<class T>
+         void print(vector<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(set<T,
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(multiset<T, 
+                    greater<T>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T>
+         void print(unordered_set<T> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template<class T, class V>
+         void print(vector<pair<T, V>> &a)
+{
+  cerr << '[' << ' ';
+  for(auto x : a)
+  {
+    print(x.first);
+    cerr << ":"; 
+    print(x.second);
+    cerr << ' ';
+  }
+  cerr << ']';
+}
+template <class T, class V> 
+          void print(map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T, class V> 
+          void print(unordered_map <T, V> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template <class T> 
+          void print(vector<vector<T>> &a) 
+{
+  cerr << "[ "; 
+  for (auto i : a) 
+  {
+    print(i); 
+    cerr << " ";
+  } 
+  cerr << "]";
+}
+template<class T>
+         void print(stack<T> &a)
+{
+  cerr << '[' << ' ';
+  stack<T>temp=a;
+  while(!temp.empty())
+  {
+    auto val=temp.top();
+    temp.pop();
+    print(val); 
+    cerr << " ";
+  }
+  cerr << ']';
+}
 
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
@@ -93,39 +232,60 @@ int ceil_div(int x, int y) {
     return (x - 1) / y + 1;
 }
 
+const int block_length=600;
+
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
-  }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+	string s;
+	cin>>s;
+	s='#'+s;
+	vector<pair<int,int>>queries;
+	int sz=s.length();
+	vector<int>pre(sz,0),non_brackets(sz,0),matching(sz,0);
+	string t1="";
+	ll cur=0;
+	stack<int>st;
+	for(int i=1;i<sz;i++){
+		if(s[i]=='('){
+			cur++;
+			st.push(i);
+		}
+		else if(s[i]==')'){
+			cur--;
+			int ind=st.top();
+			st.pop();
+			matching[ind]=i;
+		}
+		else{
+			if(cur&1){
+				if(s[i]>=97) s[i]=(char)(s[i]-32);
+				else s[i]=(char)(s[i]+32);
+			}
+			t1+=s[i];
+		}
+		pre[i]=cur;
+		non_brackets[i]+=non_brackets[i-1]+(s[i]!=')' && s[i]!='(');
+	}
+	debug(t1);
+	int n=t1.length();
+	for(int i=1;i<sz;i++){
+		if(s[i]!='(') continue;
+		queries.push_back({non_brackets[i],non_brackets[matching[i]]-1});
+	}
+	if(t1.length()==0) return;
+	sort(all(queries),[&](pair<int,int>&q1,pair<int,int>&q2){
+		int block_id1=q1.first/block_length;
+		int block_id2=q2.first/block_length;
+		return block_id1<block_id2 || (block_id1==block_id2 && q1.second<=q2.second);
+	});
+	
+	for(auto it:queries){
+		int l=it.first,r=it.second;
+		while(l<=r){
+			swap(t1[l],t1[r]);
+			l++;r--;
+		}
+	}
+	cout<<t1<<endl;
 } 
 
 int32_t main()

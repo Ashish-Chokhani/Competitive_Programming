@@ -8,7 +8,7 @@ using namespace std;
 #define int long long int
 typedef long double lld;
 typedef unsigned long long ull;
-const int mod = 1000000007; //998244353
+const int mod = 998244353;
 const int INF = 1e18;
 using ll = long long;
 // const lld pi = 3.14159265358979323846;
@@ -93,39 +93,103 @@ int ceil_div(int x, int y) {
     return (x - 1) / y + 1;
 }
 
+namespace modop {
+	ll madd(ll a, ll b) {
+	  return (a + b) % mod;
+	}
+	ll msub(ll a, ll b) {
+	  return (((a - b) % mod) + mod) % mod;
+	}
+	ll mmul(ll a, ll b) {
+	  return ((a % mod) * (b % mod)) % mod;
+	}
+	ll mpow(ll base, ll exp) {
+	  ll res = 1;
+	  exp%=mod;
+	  while (exp) {
+		if (exp % 2 == 1){
+			res = (res * base) % mod;
+		}
+		exp >>= 1;
+		base = (base * base) % mod;
+	  }
+	  return res;
+	}
+	ll minv(ll base) {
+	  return mpow(base, mod - 2);
+	}
+	ll mdiv(ll a, ll b) {
+	  return mmul(a, minv(b));
+	}
+	
+	const ll FACTORIAL_SIZE = 1.1e6;
+	ll fact[FACTORIAL_SIZE], ifact[FACTORIAL_SIZE];
+	bool __factorials_generated__ = 0;
+	void gen_factorial(ll n) {
+		__factorials_generated__ = 1;
+		fact[0] = fact[1] = ifact[0] = ifact[1] = 1;
+		
+		for (ll i = 2; i <= n; i++) {
+			fact[i] = (i * fact[i - 1]) % mod;
+		}
+		ifact[n] = minv(fact[n]);
+		for (ll i = n - 1; i >= 2; i--) {
+			ifact[i] = ((i + 1) * ifact[i + 1]) % mod;
+		}
+	}
+	ll nck(ll n, ll k) {
+		if (!__factorials_generated__) {
+			cerr << "Call gen_factorial you dope" << endl;
+			exit(1);
+		}
+		if (k < 0 || n < k) return 0;
+		ll den = (ifact[k] * ifact[n - k]) % mod;
+		return (den * fact[n]) % mod;
+	}
+}
+
+template<int MOD>
+struct ModInt {
+    long long v;
+    ModInt(long long _v = 0) {v = (-MOD < _v && _v < MOD) ? _v : _v % MOD; if (v < 0) v += MOD;}
+    ModInt& operator += (const ModInt &other) {v += other.v; if (v >= MOD) v -= MOD; return *this;}
+    ModInt& operator -= (const ModInt &other) {v -= other.v; if (v < 0) v += MOD; return *this;}
+    ModInt& operator *= (const ModInt &other) {v = v * other.v % MOD; return *this;}
+    ModInt& operator /= (const ModInt &other) {return *this *= inverse(other);}
+    bool operator == (const ModInt &other) const {return v == other.v;}
+    bool operator != (const ModInt &other) const {return v != other.v;}
+    friend ModInt operator + (ModInt a, const ModInt &b) {return a += b;}
+    friend ModInt operator - (ModInt a, const ModInt &b) {return a -= b;}
+    friend ModInt operator * (ModInt a, const ModInt &b) {return a *= b;}
+    friend ModInt operator / (ModInt a, const ModInt &b) {return a /= b;}
+    friend ModInt operator - (const ModInt &a) {return 0 - a;}
+    friend ModInt power(ModInt a, long long b) {ModInt ret(1); while (b > 0) {if (b & 1) ret *= a; a *= a; b >>= 1;} return ret;}
+    friend ModInt inverse(ModInt a) {return power(a, MOD - 2);}
+    friend istream& operator >> (istream &is, ModInt &m) {is >> m.v; m.v = (-MOD < m.v && m.v < MOD) ? m.v : m.v % MOD; if (m.v < 0) m.v += MOD; return is;}
+    friend ostream& operator << (ostream &os, const ModInt &m) {return os << m.v;}
+};
+ 
+using Mint = ModInt<mod>;
+
+using namespace modop;
+
 void solve(){
-  int N;
-  cin>>N;
-  int P[N][N],R[N][N],D[N][N],dist[N][N];
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++) cin>>P[i][j];
-  P[N-1][N-1]=1e15;
-  for(int i=0;i<N;i++) for(int j=0;j<N-1;j++) cin>>R[i][j];
-  for(int i=0;i<N-1;i++) for(int j=0;j<N;j++) cin>>D[i][j];
-  vector<vector<pair<int,int>>>dp(N,vector<pair<int,int>>(N,{INF,0}));
-  dp[0][0]={0,0};
-  for(int i=0;i<N;i++) for(int j=0;j<N;j++){
-    dist[i][j]=0;
-    for(int x=i;x<N;x++) for(int y=j;y<N;y++){
-      if(x==i && y==j) continue;
-      dist[x][y]=INF;
-      if(x>i) dist[x][y]=min(dist[x][y],dist[x-1][y]+D[x-1][y]);
-      if(y>j) dist[x][y]=min(dist[x][y],dist[x][y-1]+R[x][y-1]);
-      if(P[x][y]<=P[i][j]) continue;
-      int op=dp[i][j].first;
-      int t=-dp[i][j].second;
-      assert(t>=0 && t<P[x][y]);
-      if(t>=dist[x][y]) t-=dist[x][y];
-      else{
-        int v=ceil_div(dist[x][y]-t,P[i][j]);
-        op+=v;
-        t+=v*P[i][j];
-        t-=dist[x][y];
-      }
-      assert(t>=0 && t<P[x][y]);
-      dp[x][y]=min(dp[x][y],{op,-t});
-    }
+  int n;
+  cin>>n;
+  vector<int>arr(n+1);
+  for(int i=1;i<=n;i++) cin>>arr[i];
+  vector<Mint>pre(n+2,0),pre2(n+2,0);
+  auto cntNumDigits=[&](int num)->int{
+  	string s=to_string(num);
+  	return (int)s.length();
+  };
+  Mint ans=0;
+  for(int i=n;i>=1;i--){
+  	pre[i]=pre[i+1]+modop::mpow(10LL,cntNumDigits(arr[i]));
+  	pre2[i]=pre2[i+1]+arr[i];
   }
-  cout<<dp[N-1][N-1].first+2*N-2<<endl;
+  for(int i=1;i<=n;i++) ans+=pre[i+1]*(arr[i]%mod)+pre2[i+1];
+  cout<<ans<<endl;
 } 
 
 int32_t main()
