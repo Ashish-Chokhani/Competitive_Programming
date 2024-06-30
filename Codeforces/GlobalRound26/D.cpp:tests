@@ -1,0 +1,23 @@
+[
+	{
+		"test": "8\naaaaa\nbaba\ncabacb\naaabaaa\nbitset\nab\nabbaaaabbb\nyearnineteeneightyfour\n"
+	},
+	{
+		"test": "1\ncabacb\n"
+	},
+	{
+		"test": "1\nbaba\n"
+	},
+	{
+		"test": "1\nab\n"
+	},
+	{
+		"test": "1\naaabaaa\n"
+	},
+	{
+		"test": "1\naabaaba\n"
+	},
+	{
+		"test": "1\nabbaaaabbb\n"
+	}
+]

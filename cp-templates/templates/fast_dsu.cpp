@@ -1,35 +1,30 @@
 namespace fast_dsu {
-	const int dsu_MAXN = 100005;
-	int dsu_par[dsu_MAXN], dsu_sz[dsu_MAXN];
+    vector<int>dsu_par,dsu_sz;
 
-	void init(int n) {
-		for (int i = 0; i < n; i++) {
-			dsu_par[i] = i;
-		}
-		
-		memset(dsu_sz, -1, sizeof(dsu_sz));
-	}
+    void init(int n) {
+        dsu_par.resize(n);
+        dsu_sz.resize(n);
+        for (int i = 0; i < n; i++){
+          dsu_par[i] = i;
+          dsu_sz[i]=-1;
+        }
+    }
 
-	int find(int v) {
-		// while (v != dsu_par[v]) v = dsu_par[v];
-		while ((v = dsu_par[v]) != dsu_par[v]);
-		return v;
-	}
+    int find(int v) {
+        while ((v = dsu_par[v]) != dsu_par[v]);
+        return v;
+    }
 
-	bool connected(int v, int u) {
-		return find(v) == find(u);
-	}
+    bool connected(int v, int u) {
+        return find(v) == find(u);
+    }
 
-	int merge(int v, int u) {
-		if (dsu_sz[v] > dsu_sz[u]) {
-			int t = v;
-			v = u;
-			u = t;
-		}
-		
-		dsu_par[u] = v;
-		dsu_sz[v] += dsu_sz[u];
-	}
+    void merge(int v, int u) {
+        int par_u=find(u),par_v=find(v);
+        if (dsu_sz[par_v] > dsu_sz[par_u]) swap(par_u,par_v);
+        dsu_par[par_u] = par_v;
+        dsu_sz[par_v] += dsu_sz[par_u];
+    }
 }
 
 using namespace fast_dsu;
