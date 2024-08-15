@@ -16,146 +16,6 @@ template <typename T>
 using minHeap = priority_queue<T, vector<T>, greater<T>>;
 template <typename T>
 using maxHeap = priority_queue<T>;
-template<class T>void print(T x)
-{
-  cerr << x;
-}
-template<class T, class V>
-         void print(pair<T , V> x)
-{
-  print(x.first); 
-  cerr << ':';
-  print(x.second);
-}
-template<class T>
-         void print(vector<T> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T>
-         void print(set<T> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T>
-         void print(set<T,
-                    greater<T>> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T>
-         void print(multiset<T> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T>
-         void print(multiset<T, 
-                    greater<T>> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T>
-         void print(unordered_set<T> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template<class T, class V>
-         void print(vector<pair<T, V>> &a)
-{
-  cerr << '[' << ' ';
-  for(auto x : a)
-  {
-    print(x.first);
-    cerr << ":"; 
-    print(x.second);
-    cerr << ' ';
-  }
-  cerr << ']';
-}
-template <class T, class V> 
-          void print(map <T, V> &a) 
-{
-  cerr << "[ "; 
-  for (auto i : a) 
-  {
-    print(i); 
-    cerr << " ";
-  } 
-  cerr << "]";
-}
-template <class T, class V> 
-          void print(unordered_map <T, V> &a) 
-{
-  cerr << "[ "; 
-  for (auto i : a) 
-  {
-    print(i); 
-    cerr << " ";
-  } 
-  cerr << "]";
-}
-template <class T> 
-          void print(vector<vector<T>> &a) 
-{
-  cerr << "[ "; 
-  for (auto i : a) 
-  {
-    print(i); 
-    cerr << " ";
-  } 
-  cerr << "]";
-}
-template<class T>
-         void print(stack<T> &a)
-{
-  cerr << '[' << ' ';
-  stack<T>temp=a;
-  while(!temp.empty())
-  {
-    auto val=temp.top();
-    temp.pop();
-    print(val); 
-    cerr << " ";
-  }
-  cerr << ']';
-}
-
 
 #ifndef ONLINE_JUDGE
 #define debug(x) cerr << #x << "  "; print(x); cerr << '\n';
@@ -241,45 +101,33 @@ int ceil_div(int x, int y) {
 }
 
 void solve(){
-  int n;
-  cin>>n;
-  string s;
-  cin>>s;
-  if(n==2){
-  	cout<<stoi(s)<<"\n";
-  	return;
+  int n,k;
+  cin>>n>>k;
+  vector<int>arr(n);
+  unordered_map<int,vector<int>,custom_hash>mp;
+  for(auto &x:arr){
+    cin>>x;
+    mp[x%k].push_back(x);
   }
-  int ans=INF;
-  for(int i=0;i<n-1;i++){
-  	vector<int>arr;
-  	for(int j=0;j<n-1;j++){
-  		if(j==i) arr.push_back(stoi(s.substr(i,2)));
-  		else arr.push_back(s[j]-'0');
-  	}
-  	for(int j=0;j<1LL<<(n-2);j++){
-  		vector<int>in_between;
-  	    int val=0;
-  		for(int k=0;k<n-2;k++){
-  			if(j&(1LL<<k)){
-  				in_between.push_back(val);
-  				val=arr[k];
-  			}
-  			else val+=arr[k];
-  		}
-  		int v1=accumulate(all(arr),0);
-	  	ans=min(ans,v1);
-	  	
-	    //debug(arr);
-	  	
-	  	if(!in_between.size()) continue;
-	  	int res=1;
-	  	for(auto it:in_between) res*=it;
-	  	//debug(in_between)
-	  	//cout<<i<<" "<<res<<endl;
-	  	ans=min(ans,res);
-  	}
+  int cnt_odd=0,ans=0;
+  for(auto [_,v]:mp){
+    sort(all(v));
+    int val=INF,sz=(int)v.size(),s=0;
+    cnt_odd+=sz&1;
+    vector<int>suffix_sum(sz+1,0);
+    for(int j=sz-1;j>=0;j--) suffix_sum[j]=v[j]-suffix_sum[j+1];
+    for(int j=0;j<sz;j++){
+      if(sz&1) val=min(val,s+((j&1)?suffix_sum[j+1]:-suffix_sum[j+1]));
+      else val=min(val,s+((j&1)?suffix_sum[j]:-suffix_sum[j]));
+      s+=(j&1?v[j]:-v[j]);
+    }
+    assert(val%k==0);
+    val/=k;
+    ans+=val;
   }
+  if(cnt_odd>1) ans=-1;
   cout<<ans<<endl;
+  
 } 
 
 int32_t main()

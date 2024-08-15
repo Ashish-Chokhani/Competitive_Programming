@@ -1,0 +1,11 @@
+[
+	{
+		"test": "6\n6 2 0\nLWLLLW\n6 1 1\nLWLLLL\n6 1 1\nLWLLWL\n6 2 15\nLWLLCC\n6 10 0\nCCCCCC\n6 6 1\nWCCCCW\n"
+	},
+	{
+		"test": "1\n6 2 15\nLWLLCC\n"
+	},
+	{
+		"test": "1\n6 1 1\nLWLLWL\n"
+	}
+]
