@@ -1,0 +1,11 @@
+[
+	{
+		"test": "3\n2 L\n2 L\n100 L\n"
+	},
+	{
+		"test": "8\n22 L\n75 L\n26 R\n45 R\n72 R\n81 R\n47 L\n29 R\n"
+	},
+	{
+		"test": "4\n3 L\n6 R\n9 L\n1 R\n"
+	}
+]

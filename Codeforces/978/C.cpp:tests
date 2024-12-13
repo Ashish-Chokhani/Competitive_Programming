@@ -1,0 +1,8 @@
+[
+	{
+		"test": "4\n3\nAAA\nAJJ\n6\nJAJAJJ\nJJAJAJ\n6\nAJJJAJ\nAJJAAA\n9\nAJJJJAJAJ\nJAAJJJJJA\n"
+	},
+	{
+		"test": "1\n9\nAJJJJAJAJ\nJAAJJJJJA\n"
+	}
+]

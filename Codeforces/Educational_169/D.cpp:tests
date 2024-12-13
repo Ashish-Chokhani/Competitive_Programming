@@ -1,0 +1,14 @@
+[
+	{
+		"test": "2\n4 5\nBR BR GY GR\n1 2\n3 1\n4 4\n1 4\n4 2\n2 1\nBG RY\n1 2\n"
+	},
+	{
+		"test": "1\n2 1\nBG RY\n1 2\n"
+	},
+	{
+		"test": "1\n4 1\nBR BR GY GR\n3 1\n"
+	},
+	{
+		"test": "1\n3 3\nBR BG RY\n1 2\n1 3\n2 3\n"
+	}
+]
